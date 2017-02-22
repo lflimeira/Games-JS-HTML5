@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>PONG (HTML5 - JavaScript)</title>
+                <style type="text/css">
+                        canvas {
+                            border:1px solid #ffffff;
+                            margin-left: calc(50% - 400px); 
+                        }
+                        body{
+                            background-color: #000000;
+                        }
+                </style>
+    </head>   
+    <body onload="init()">
+        <canvas id="canvas" width="800" height="580">
+                Navegador não compatível com HTML5 Canvas
+        </canvas>
+        <script>
+            var canvas, context, playerWidth, playerHeight, player1PosX, player1PosY, teclaCimaPressionada, teclaBaixoPressionada, teclaCimaPressionada2, teclaBaixoPressionada2, player2PosX, player2PosY, bolaRaio, bolaPosX, bolaPosY, bolaParaDireita, bolaAngulo, bolaTempo, velocidadePlayer1, velocidadePlayer2, velocidadeBola, pontosPlayer1, pontosPlayer2;
+            
+            function init() {
+                canvas = document.getElementById("canvas");
+                context = canvas.getContext("2d");
+                playerWidth = 30;
+                playerHeight = 90;
+                player1PosX = 0;
+                player1PosY = (canvas.height - playerHeight) / 2;
+                teclaCimaPressionada = false;
+                teclaBaixoPressionada = false;
+                teclaCimaPressionada2 = false;
+                teclaBaixoPressionada2 = false;
+                player2PosX = canvas.width - playerWidth;
+                player2PosY = (canvas.height - playerHeight) / 2;
+                bolaRaio = 10;
+                bolaPosX = canvas.width / 2;
+                bolaPosY = canvas.height / 2;
+                bolaParaDireita = false;
+                bolaAngulo = 0;
+                bolaTempo = 0;
+                velocidadePlayer1 = 15;
+                velocidadePlayer2 = 15;
+                velocidadeBola = 15;
+                pontosPlayer1 = 0;
+                pontosPlayer2 = 0;
+                    
+                document.addEventListener('keyup', keyUp, false);
+                document.addEventListener('keydown', keyDown, false);
+                setInterval(gameLoop, 30);
+            }
+            
+            function keyDown(e) {
+                    if (e.keyCode == 38) { 
+                        teclaCimaPressionada = true;
+                    }
+                    else if (e.keyCode == 40) { 
+                        teclaBaixoPressionada = true;
+                    }
+                    if (e.keyCode == 87) { 
+                        teclaCimaPressionada2 = true;
+                    }
+                    else if (e.keyCode == 83) { 
+                        teclaBaixoPressionada2 = true;
+                    }
+            }
+                        
+            function keyUp(e) {
+                    if (e.keyCode == 38) { 
+                        teclaCimaPressionada = false; 
+                    }
+                    else if (e.keyCode == 40) { 
+                        teclaBaixoPressionada = false; 
+                    }
+                    if (e.keyCode == 87) { 
+                        teclaCimaPressionada2 = false; 
+                    }
+                    else if (e.keyCode == 83) { 
+                        teclaBaixoPressionada2 = false; 
+                    }
+            }
+                        
+            function gameLoop() {
+                if (teclaCimaPressionada!=teclaBaixoPressionada) { 
+                    if (teclaCimaPressionada) { 
+                        if (player1PosY > 0) { 
+                                player1PosY -= velocidadePlayer1;
+                        }
+                    }
+                    else { 
+                        if (player1PosY < (canvas.height - playerHeight)) {
+                            player1PosY += velocidadePlayer1;
+                        }
+                    }
+                }
+                if (teclaCimaPressionada2!=teclaBaixoPressionada2) { 
+                    if (teclaCimaPressionada2) { 
+                        if (player2PosY > 0) { 
+                                player2PosY -= velocidadePlayer2;
+                        }
+                    }
+                    else { 
+                        if (player2PosY < (canvas.height - playerHeight)) {
+                            player2PosY += velocidadePlayer2;
+                        }
+                    }
+                }
+                if (bolaTempo <= 0) {
+                    if ((bolaPosX - bolaRaio) <= (player1PosX + playerWidth)) {
+                        if ((bolaPosY + bolaRaio > player1PosY) && (bolaPosY - bolaRaio < player1PosY + playerHeight)) {
+                            bolaParaDireita = true;
+                            if (teclaCimaPressionada) {
+                                bolaAngulo = Math.floor(Math.random() * 10) - 9;
+                            }
+                            else {
+                                bolaAngulo = Math.floor((Math.random() * 10));
+                            }                        
+                        }                    
+                    }
+                    else if ((bolaPosX + bolaRaio) >= player2PosX) {
+                        if ((bolaPosY + bolaRaio > player2PosY) && (bolaPosY - bolaRaio < player2PosY + playerHeight)) {
+                            bolaParaDireita = false;
+                            if (teclaCimaPressionada2) {
+                                bolaAngulo = Math.floor(Math.random() * 10) - 9;
+                            }
+                            else {
+                                bolaAngulo = Math.floor((Math.random() * 10));
+                            }                        
+                        }                    
+                    }                    
+                    if ((bolaPosY - bolaRaio <= 0) || (bolaPosY + bolaRaio > canvas.height)) {
+                        bolaAngulo = bolaAngulo * -1;
+                    }
+                    bolaPosY += bolaAngulo;
+                    
+                    if (bolaParaDireita) {
+                        bolaPosX += velocidadeBola;
+                    }
+                    else {
+                        bolaPosX -= velocidadeBola;
+                    }                    
+                }              
+                
+                if ((bolaPosX <= -bolaRaio) || (bolaPosX > canvas.width)) {
+                    if (bolaTempo >= 50) {
+                        if (bolaPosX <= -bolaRaio)  {
+                            pontosPlayer2++;
+                            bolaParaDireita = false;
+                        }
+                        else {
+                            pontosPlayer1++;
+                            bolaParaDireita = true;
+                        }
+                    
+                        bolaPosX = canvas.width / 2;
+                        bolaPosY = canvas.height / 2;
+                        bolaAngulo = 0;
+                        bolaTempo = 0;
+                    }
+                    else {
+                        bolaTempo++;
+                    }
+                }
+                
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                
+                
+                context.fillRect(player1PosX, player1PosY, playerWidth, playerHeight);
+                context.fillRect(player2PosX, player2PosY, playerWidth, playerHeight);
+                
+                context.beginPath();
+                context.arc(bolaPosX, bolaPosY, bolaRaio, 0, Math.PI * 2, true); 
+                context.closePath();
+                context.fill();
+                
+                var pontosA = pontosPlayer1;
+                var pontosB = pontosPlayer2;
+                
+                if (pontosA < 10) {
+                    pontosA = "0" + pontosA;
+                }
+                if (pontosB < 10) {
+                    pontosB = "0" + pontosB;
+                }
+                
+                context.font = "42pt Helvetica";
+                            context.fillStyle = "#ffffff";
+                            context.fillText(pontosA + " " + pontosB, (canvas.width / 2) - 70, 50); 
+                
+                context.beginPath();
+                context.moveTo(canvas.width / 2, 0);
+                context.lineTo(canvas.width / 2, canvas.height);
+                context.strokeStyle = "#ffffff";
+                context.stroke();
+                context.closePathfinali();
+            }
+        </script>
+    </body>
+</html>
