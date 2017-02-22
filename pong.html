@@ -109,6 +109,7 @@
                     if ((bolaPosX - bolaRaio) <= (player1PosX + playerWidth)) {
                         if ((bolaPosY + bolaRaio > player1PosY) && (bolaPosY - bolaRaio < player1PosY + playerHeight)) {
                             bolaParaDireita = true;
+                            velocidadeBola++;
                             if (teclaCimaPressionada) {
                                 bolaAngulo = Math.floor(Math.random() * 10) - 9;
                             }
@@ -120,12 +121,13 @@
                     else if ((bolaPosX + bolaRaio) >= player2PosX) {
                         if ((bolaPosY + bolaRaio > player2PosY) && (bolaPosY - bolaRaio < player2PosY + playerHeight)) {
                             bolaParaDireita = false;
+                            velocidadeBola++;
                             if (teclaCimaPressionada2) {
                                 bolaAngulo = Math.floor(Math.random() * 10) - 9;
                             }
                             else {
                                 bolaAngulo = Math.floor((Math.random() * 10));
-                            }                        
+                            }
                         }                    
                     }                    
                     if ((bolaPosY - bolaRaio <= 0) || (bolaPosY + bolaRaio > canvas.height)) {
@@ -146,10 +148,12 @@
                         if (bolaPosX <= -bolaRaio)  {
                             pontosPlayer2++;
                             bolaParaDireita = false;
+                            velocidadeBola = 15;
                         }
                         else {
                             pontosPlayer1++;
                             bolaParaDireita = true;
+                            velocidadeBola = 15;
                         }
                     
                         bolaPosX = canvas.width / 2;
