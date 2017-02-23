@@ -3,24 +3,65 @@
     <head>
         <meta charset="UTF-8" />
         <title>PONG (HTML5 - JavaScript)</title>
-                <style type="text/css">
-                        canvas {
-                            border:1px solid #ffffff;
-                            margin-left: calc(50% - 400px); 
-                        }
-                        body{
-                            background-color: #000000;
-                        }
-                </style>
+            <style type="text/css">
+                canvas {
+                    border:1px solid #ffffff;
+                    margin-left: calc(50% - 400px); 
+                }
+                body{
+                    background-color: #000000;
+                }
+                #btStart {
+                    position: absolute;
+                    top: 256px;
+                    left: calc(50% - 95px);
+                    width: 190px;
+                    height: 86px;
+                    font-weight: bold;
+                    font-size: 37px;
+                    background-color: #fff;
+                    border: 0px;
+                }
+                #btRestart {
+                    width: 211px;
+                    height: 52px;
+                    font-weight: bold;
+                    font-size: 34px;
+                    background-color: #000;
+                    color: #fff;
+                    margin-top: 8px;
+                    border: 0px;
+                }
+                #result{
+                    position: absolute;
+                    top: 236px;
+                    left: calc(50% - 150px);
+                    width: 300px;
+                    height: 112px;
+                    font-weight: bold;
+                    font-size: 37px;
+                    background-color: #fff;
+                    border: 0px;
+                    text-align: center;
+                    padding-top: 10px;
+                    display: none;
+                }
+            </style>
     </head>   
-    <body onload="init()">
+    <body>
+        <button id="btStart" onClick="init()">Start</button>
+        <div id="result"></div>
         <canvas id="canvas" width="800" height="580">
                 Navegador não compatível com HTML5 Canvas
         </canvas>
-        <script>
-            var canvas, context, playerWidth, playerHeight, player1PosX, player1PosY, teclaCimaPressionada, teclaBaixoPressionada, teclaCimaPressionada2, teclaBaixoPressionada2, player2PosX, player2PosY, bolaRaio, bolaPosX, bolaPosY, bolaParaDireita, bolaAngulo, bolaTempo, velocidadePlayer1, velocidadePlayer2, velocidadeBola, pontosPlayer1, pontosPlayer2;
+        <script type="text/javascript">
+            var canvas, context, playerWidth, playerHeight, player1PosX, player1PosY, teclaCimaPressionada, teclaBaixoPressionada, teclaCimaPressionada2, teclaBaixoPressionada2, player2PosX, player2PosY, bolaRaio, bolaPosX, bolaPosY, bolaParaDireita, bolaAngulo, bolaTempo, velocidadePlayer1, velocidadePlayer2, velocidadeBola, pontosPlayer1, pontosPlayer2, startButton, result, refresh;
             
             function init() {
+                startButton = document.getElementById("btStart");
+                startButton.style.display = "none";
+                result = document.getElementById("result");
+                result.style.display = "none";
                 canvas = document.getElementById("canvas");
                 context = canvas.getContext("2d");
                 playerWidth = 30;
@@ -47,7 +88,9 @@
                     
                 document.addEventListener('keyup', keyUp, false);
                 document.addEventListener('keydown', keyDown, false);
-                setInterval(gameLoop, 30);
+                
+                
+                refresh = setInterval(gameLoop, 30);
             }
             
             function keyDown(e) {
@@ -109,7 +152,7 @@
                     if ((bolaPosX - bolaRaio) <= (player1PosX + playerWidth)) {
                         if ((bolaPosY + bolaRaio > player1PosY) && (bolaPosY - bolaRaio < player1PosY + playerHeight)) {
                             bolaParaDireita = true;
-                            velocidadeBola++;
+                            velocidadeBola = velocidadeBola + 0.5;
                             if (teclaCimaPressionada) {
                                 bolaAngulo = Math.floor(Math.random() * 10) - 9;
                             }
@@ -121,7 +164,7 @@
                     else if ((bolaPosX + bolaRaio) >= player2PosX) {
                         if ((bolaPosY + bolaRaio > player2PosY) && (bolaPosY - bolaRaio < player2PosY + playerHeight)) {
                             bolaParaDireita = false;
-                            velocidadeBola++;
+                            velocidadeBola = velocidadeBola + 0.5;
                             if (teclaCimaPressionada2) {
                                 bolaAngulo = Math.floor(Math.random() * 10) - 9;
                             }
@@ -186,17 +229,28 @@
                 if (pontosB < 10) {
                     pontosB = "0" + pontosB;
                 }
+
+                if (pontosPlayer1 == 10 || pontosPlayer2 == 10) {
+                    var win;
+                    if (pontosPlayer1 == 10) 
+                    {win = 'Player 1';}
+                    else
+                    {win = 'Player 2';}
+                    result.innerHTML = win+' Win!!! <br /> <button id="btRestart" onClick="init()">Play again</button>';
+                    result.style.display = "block";
+                    clearInterval(refresh);
+                }
                 
                 context.font = "42pt Helvetica";
-                            context.fillStyle = "#ffffff";
-                            context.fillText(pontosA + " " + pontosB, (canvas.width / 2) - 70, 50); 
+                context.fillStyle = "#ffffff";
+                context.fillText(pontosA + " " + pontosB, (canvas.width / 2) - 70, 50); 
                 
                 context.beginPath();
                 context.moveTo(canvas.width / 2, 0);
                 context.lineTo(canvas.width / 2, canvas.height);
                 context.strokeStyle = "#ffffff";
                 context.stroke();
-                context.closePathfinali();
+                context.closePath();
             }
         </script>
     </body>
