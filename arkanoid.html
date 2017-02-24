@@ -55,7 +55,7 @@
                 Navegador não compatível com HTML5 Canvas
         </canvas>
         <script type="text/javascript">
-            var canvas, context, playerWidth, playerHeight, player1PosX, player1PosY, teclaDireitaPressionada, teclaEsquerdaPressionada, teclaCimaPressionada2, teclaBaixoPressionada2, player2PosX, player2PosY, bolaRaio, bolaPosX, bolaPosY, bolaParaCima, bolaAngulo, bolaTempo, velocidadePlayer1, velocidadePlayer2, velocidadeBola, pontosPlayer1, pontosPlayer2, startButton, result, refresh;
+            var canvas, context, playerWidth, playerHeight, player1PosX, player1PosY, teclaDireitaPressionada, teclaEsquerdaPressionada, teclaCimaPressionada2, teclaBaixoPressionada2, player2PosX, player2PosY, bolaRaio, bolaPosX, bolaPosY, bolaParaCima, bolaAngulo, bolaTempo, velocidadePlayer1, velocidadePlayer2, velocidadeBola, pontosPlayer1, pontosPlayer2, startButton, result, refresh, bricksQtdCol, bricksQtdRow, bricksQtdCol, bricksQtdRow, bricksWidth, bricksHeight, bricks;
             
             function init() {
                 startButton = document.getElementById("btStart");
@@ -79,6 +79,12 @@
                 velocidadePlayer1 = 15;
                 velocidadeBola = 15;
                 pontosPlayer1 = 0;
+                bricksWidth = 60;
+                bricksHeight = 20;
+                bricksQtdCol = (canvas.width - 20) / bricksWidth;
+                bricksQtdRow = ((canvas.height / 2) - 50) / bricksHeight;
+                bricks = [];
+                bricksClean = [];
                     
                 document.addEventListener('keyup', keyUp, false);
                 document.addEventListener('keydown', KeyDown, false);
@@ -171,8 +177,75 @@
                 context.arc(bolaPosX, bolaPosY, bolaRaio, 0, Math.PI * 2, true); 
                 context.closePath();
                 context.fill();
+
+                function Brick(id,x,y,width,height){
+                    this.id = id;
+                    this.x = x;
+                    this.y = y;
+                    this.width = width;
+                    this.height = height;
+                }
+
+                var marginY = 2;
+                var marginX = 2;
+                var brickFor;
+                var idCount = 0;
+                for(var y = 1; y <= bricksQtdRow; y++){
+                    for(var x = 1; x <= bricksQtdCol; x++){
+                        if(!checkBricks(idCount)){
+                            context.save();
+                            context.fillStyle = "#ffffff";
+                            context.fillRect(marginX, marginY, bricksWidth, bricksHeight);
+                            context.restore(); 
+                        }   
+                        marginX += bricksWidth + 2;
+                        brickFor = new Brick(idCount,marginX,marginY,bricksWidth,bricksHeight);
+                        bricks.push(brickFor);
+                        idCount++;
+                    }
+                    marginY += bricksHeight + 2;
+                    marginX = 2;
+                }
+
+                function checkBricks(idCount){
+                    for(var i=0; i < bricksClean.length; i++) {
+                        if(bricksClean[i].id === idCount) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+
+
+                var ax1 = bolaPosX-bolaRaio;
+                var ay1 = bolaPosY-bolaRaio;
+                var ax2 = bolaPosX+bolaRaio;
+                var ay2 = bolaPosY+bolaRaio;
+                var bx1;
+                var bx2;
+                var bx2;
+                var by2;
+                for(var i = 0; i < bricks.length; i++){
+                    bx1 = bricks[i].x;
+                    by1 = bricks[i].y;
+                    bx2 = bricks[i].x+bricks[i].width;
+                    by2 = bricks[i].y+bricks[i].height;
+                    if(!(ax2 <= bx1 || bx2 <= ax1 || ay2 <= by1 || by2 <= ay1)){
+                        prevX = bolaPosX - bolaRaio;
+                        prevY = bolaPosY - bolaRaio;
+                        /*if((prevX > bx2 || prevX < bx1) && prevY >= by1 && prevY <= by2){
+                            ball.dx = -ball.dx; 
+                        } else {
+                            ball.dy = -ball.dy;
+                        }*/
+                        bricksClean.push(new Brick(bricks[i].id,bricks[i].x,bricks[i].y,bricks[i].width,bricks[i].height));
+                        bolaParaCima = false;
+                        bolaAngulo = bolaAngulo * 1;
+                    }
+                }
+
                 
-                /*var pontosA = pontosPlayer1;
+               /* var pontosA = pontosPlayer1;
                 
                 if (pontosA < 10) {
                     pontosA = "0" + pontosA;
